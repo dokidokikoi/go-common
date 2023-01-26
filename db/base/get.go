@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	meta "common/meta/option"
+	meta "github.com/dokidokikoi/go-common/meta/option"
 )
 
 func (p *PgModel[T]) Get(ctx context.Context, t *T, option *meta.GetOption) (*T, error) {

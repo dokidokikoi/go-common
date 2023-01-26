@@ -1,6 +1,6 @@
 package query
 
-import meta "common/meta/option"
+import meta "github.com/dokidokikoi/go-common/meta/option"
 
 type PageQuery struct {
 	Page     int    `form:"page"`

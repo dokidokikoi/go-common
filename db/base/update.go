@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	meta "common/meta/option"
+	meta "github.com/dokidokikoi/go-common/meta/option"
 
 	"github.com/jackc/pgconn"
 )

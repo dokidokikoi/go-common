@@ -1,9 +1,10 @@
 package base
 
 import (
-	meta "common/meta/option"
 	"fmt"
 	"strings"
+
+	meta "github.com/dokidokikoi/go-common/meta/option"
 
 	"gorm.io/gorm"
 )

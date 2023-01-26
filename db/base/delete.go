@@ -3,7 +3,7 @@ package base
 import (
 	"context"
 
-	meta "common/meta/option"
+	meta "github.com/dokidokikoi/go-common/meta/option"
 )
 
 func (p *PgModel[T]) Delete(ctx context.Context, t *T, option *meta.DeleteOption) error {

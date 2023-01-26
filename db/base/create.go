@@ -3,7 +3,7 @@ package base
 import (
 	"context"
 
-	meta "common/meta/option"
+	meta "github.com/dokidokikoi/go-common/meta/option"
 )
 
 func (p *PgModel[T]) Create(ctx context.Context, t *T, option *meta.CreateOption) error {
