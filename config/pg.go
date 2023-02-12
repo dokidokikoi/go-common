@@ -26,7 +26,7 @@ const (
 	pgKey string = "postgresql"
 )
 
-func GetPgInfo() *PGConfig {
+func GetPgInfo() PGConfig {
 	pgConfig := &PGConfig{
 		Port: 5432, Host: "127.0.0.1", Database: "postgres", TimeZone: "Asia/Shanghai", Password: "postgres",
 	}
@@ -35,5 +35,5 @@ func GetPgInfo() *PGConfig {
 		conf.Unmarshal(pgConfig)
 	}
 
-	return pgConfig
+	return *pgConfig
 }

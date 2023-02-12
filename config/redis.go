@@ -11,7 +11,7 @@ const (
 	redisKey string = "redis"
 )
 
-func GetRadisInfo() *RedisConfig {
+func GetRadisInfo() RedisConfig {
 	redisConfig := &RedisConfig{
 		Port: 6379, Host: "127.0.0.1", DB: 0, Password: "",
 	}
@@ -20,5 +20,5 @@ func GetRadisInfo() *RedisConfig {
 		conf.Unmarshal(redisConfig)
 	}
 
-	return redisConfig
+	return *redisConfig
 }

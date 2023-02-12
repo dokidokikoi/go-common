@@ -22,7 +22,7 @@ const (
 	esKey string = "elasticsearch"
 )
 
-func GetEsInfo() *EsConfig {
+func GetEsInfo() EsConfig {
 	esConfig := &EsConfig{
 		Port: 9200, Host: "127.0.0.1", Cert: "http_ca.crt", Username: "elastic", Password: "",
 	}
@@ -31,5 +31,5 @@ func GetEsInfo() *EsConfig {
 		conf.Unmarshal(esConfig)
 	}
 
-	return esConfig
+	return *esConfig
 }

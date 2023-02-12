@@ -21,7 +21,7 @@ const (
 	rabbitMqKey string = "rabbitmq"
 )
 
-func GetRabbitMqInfo() *RabbitMqConfig {
+func GetRabbitMqInfo() RabbitMqConfig {
 	rabbitMqConfig := &RabbitMqConfig{
 		Port: 5672, Host: "127.0.0.1", Username: "harukaze", Password: "123456",
 	}
@@ -30,5 +30,5 @@ func GetRabbitMqInfo() *RabbitMqConfig {
 		conf.Unmarshal(rabbitMqConfig)
 	}
 
-	return rabbitMqConfig
+	return *rabbitMqConfig
 }
