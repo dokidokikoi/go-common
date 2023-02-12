@@ -1,13 +1,26 @@
 package config
 
 import (
-	"gorm.io/datatypes"
+	"fmt"
+
+	"github.com/spf13/viper"
 )
 
-type StoreInfo struct {
-	PGInfo    *PGConfig
-	RedisInfo *RedisConfig
-	MongoInfo *MongoConfig
-	KafkaInfo *KafkaConfig
-	OtherInfo datatypes.JSONMap
+var config *viper.Viper
+
+func Config() *viper.Viper {
+	return config
+}
+
+func SetConfig(filename string) {
+	config = viper.New()
+	config.SetConfigFile(filename)
+	err := config.ReadInConfig()
+	if err != nil {
+		panic(fmt.Errorf("fatal error config file: %s", err))
+	}
+}
+
+func GetSpecConfig(key string) *viper.Viper {
+	return config.Sub(key)
 }

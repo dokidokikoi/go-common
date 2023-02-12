@@ -1,10 +1,5 @@
 package config
 
-import (
-	"database/sql/driver"
-	"encoding/json"
-)
-
 type RedisConfig struct {
 	Host     string
 	Port     int
@@ -12,16 +7,18 @@ type RedisConfig struct {
 	DB       int
 }
 
-func (s RedisConfig) Value() (driver.Value, error) {
-	return json.Marshal(s)
-}
+const (
+	redisKey string = "redis"
+)
 
-func (s *RedisConfig) Scan(src interface{}) (err error) {
-	var c RedisConfig
-	err = json.Unmarshal(src.([]byte), &c)
-	if err != nil {
-		return
+func GetRadisInfo() *RedisConfig {
+	redisConfig := &RedisConfig{
+		Port: 6379, Host: "127.0.0.1", DB: 0, Password: "",
 	}
-	*s = c
-	return nil
+	conf := GetSpecConfig(redisKey)
+	if conf != nil {
+		conf.Unmarshal(redisConfig)
+	}
+
+	return redisConfig
 }
