@@ -2,6 +2,8 @@ package base
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	meta "github.com/dokidokikoi/go-common/meta/option"
 )
@@ -33,6 +35,18 @@ func (p *PgModel[T]) CountComplex(ctx context.Context, example *T, condition *me
 				fields = append(fields, i)
 			}
 			db = db.Where(example, fields...)
+		}
+
+		for _, join := range option.Join {
+			joinSQL := fmt.Sprintf("%s %s ON %s.%s = %s.%s", join.Method, join.JoinTable, join.Table, join.TableField, join.JoinTable, join.JoinTableField)
+			var joinConditions []string
+			var values []any
+			joinConditions = append(joinConditions, joinSQL)
+			for _, condition := range join.JoinTableCondition {
+				joinConditions = append(joinConditions, fmt.Sprintf("%s.%s %s ?", join.JoinTable, condition.Field, condition.Operator))
+				values = append(values, condition.Value)
+			}
+			db.Joins(strings.Join(joinConditions, " AND "), values...)
 		}
 	}
 	err := CompositeQuery(db, condition).Count(&result).Error
