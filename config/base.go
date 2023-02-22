@@ -1,7 +1,9 @@
 package config
 
 import (
-	"fmt"
+	"path"
+	"path/filepath"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -12,15 +14,27 @@ func Config() *viper.Viper {
 	return config
 }
 
-func SetConfig(filename string) {
-	config = viper.New()
-	config.SetConfigFile(filename)
-	err := config.ReadInConfig()
+func Parse(configFile string, obj interface{}) {
+	confFileAbs, err := filepath.Abs(configFile)
 	if err != nil {
-		panic(fmt.Errorf("fatal error config file: %s", err))
+		panic(err)
 	}
-}
 
-func GetSpecConfig(key string) *viper.Viper {
-	return config.Sub(key)
+	filePathStr, filename := filepath.Split(confFileAbs)
+	ext := strings.TrimLeft(path.Ext(filename), ".")
+	filename = strings.ReplaceAll(filename, "."+ext, "")
+
+	config = viper.New()
+	config.AddConfigPath(filePathStr)
+	config.SetConfigName(filename)
+	config.SetConfigType(ext)
+	err = config.ReadInConfig()
+	if err != nil {
+		panic(err)
+	}
+
+	err = config.Unmarshal(obj)
+	if err != nil {
+		panic(err)
+	}
 }

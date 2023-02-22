@@ -3,11 +3,11 @@ package config
 import "fmt"
 
 type EsConfig struct {
-	Host     string
-	Port     int
-	Cert     string `validate:"required"`
-	Username string `validate:"required"`
-	Password string
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
+	Cert     string `mapstructure:"cert"`
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
 }
 
 func (s EsConfig) Address() string {
@@ -16,20 +16,4 @@ func (s EsConfig) Address() string {
 
 func (s EsConfig) Url() string {
 	return fmt.Sprintf("https://%s", s.Address())
-}
-
-const (
-	esKey string = "elasticsearch"
-)
-
-func GetEsInfo() EsConfig {
-	esConfig := &EsConfig{
-		Port: 9200, Host: "127.0.0.1", Cert: "http_ca.crt", Username: "elastic", Password: "",
-	}
-	conf := GetSpecConfig(esKey)
-	if conf != nil {
-		conf.Unmarshal(esConfig)
-	}
-
-	return *esConfig
 }

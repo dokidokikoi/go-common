@@ -3,12 +3,12 @@ package config
 import "fmt"
 
 type PGConfig struct {
-	Host     string
-	Port     int
-	Database string `validate:"required"`
-	Username string `validate:"required"`
-	TimeZone string
-	Password string
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
+	Database string `mapstructure:"database"`
+	Username string `mapstructure:"username"`
+	TimeZone string `mapstructure:"timezone"`
+	Password string `mapstructure:"password"`
 }
 
 func (p PGConfig) Dns() string {
@@ -20,20 +20,4 @@ func (p PGConfig) Dns() string {
 		p.TimeZone,
 		p.Password,
 	)
-}
-
-const (
-	pgKey string = "postgresql"
-)
-
-func GetPgInfo() PGConfig {
-	pgConfig := &PGConfig{
-		Port: 5432, Host: "127.0.0.1", Database: "postgres", TimeZone: "Asia/Shanghai", Password: "postgres",
-	}
-	conf := GetSpecConfig(pgKey)
-	if conf != nil {
-		conf.Unmarshal(pgConfig)
-	}
-
-	return *pgConfig
 }

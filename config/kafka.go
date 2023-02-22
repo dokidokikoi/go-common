@@ -6,8 +6,8 @@ import (
 )
 
 type KafkaConfig struct {
-	Host string
-	Port int
+	Host string `mapstructure:"host"`
+	Port int    `mapstructure:"port"`
 }
 
 func (s KafkaConfig) Value() (driver.Value, error) {
