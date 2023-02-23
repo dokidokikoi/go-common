@@ -21,4 +21,5 @@ const (
 	ErrPassword int = iota + 10200
 	ErrTokenExpired
 	ErrAccessDenied
+	ErrPlzLogin
 )

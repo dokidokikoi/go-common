@@ -18,6 +18,7 @@ var (
 	ErrAccessDenied    = errors.New("拒绝访问")
 	ErrTokenExpired    = errors.New("token已过期")
 	ErrPassword        = errors.New("密码错误")
+	ErrPlzLogin        = errors.New("请登录")
 )
 
 var (
@@ -32,4 +33,5 @@ var (
 	ApiErrAccessDenied    = ClientFailed(ErrAccessDenied.Error(), code.ErrAccessDenied)
 	ApiErrTokenExpired    = ClientFailed(ErrTokenExpired.Error(), code.ErrTokenExpired)
 	ApiErrPassword        = ClientFailed(ErrPassword.Error(), code.ErrPassword)
+	ApiErrPlzLogin        = ClientFailed(ErrPlzLogin.Error(), code.ErrPlzLogin)
 )
