@@ -14,6 +14,8 @@ type PgModel[T BaseModel] struct {
 	DB *gorm.DB
 }
 
+var _ BasicCURD[struct{}] = (*PgModel[struct{}])(nil)
+
 type CreateMixin[T BaseModel] interface {
 	Create(ctx context.Context, t *T, option *meta.CreateOption) error
 	CreateCollection(ctx context.Context, t []*T, option *meta.CreateCollectionOption) []error
@@ -32,6 +34,10 @@ type GetMixin[T BaseModel] interface {
 	CountComplex(ctx context.Context, example *T, condition *meta.WhereNode, option *meta.GetOption) (int64, error)
 	List(ctx context.Context, t *T, option *meta.ListOption) ([]*T, error)
 	ListComplex(ctx context.Context, example *T, condition *meta.WhereNode, option *meta.ListOption) ([]*T, error)
+	CountUnscoped(ctx context.Context, t *T, option *meta.GetOption) (int64, error)
+	CountComplexUnscoped(ctx context.Context, example *T, condition *meta.WhereNode, option *meta.GetOption) (int64, error)
+	ListUnscoped(ctx context.Context, t *T, option *meta.ListOption) ([]*T, error)
+	ListComplexUnscoped(ctx context.Context, example *T, condition *meta.WhereNode, option *meta.ListOption) ([]*T, error)
 }
 
 type DeleteMixin[T BaseModel] interface {
