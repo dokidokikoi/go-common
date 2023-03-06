@@ -8,7 +8,7 @@ const (
 
 type GetOption struct {
 	Include []string
-	Preload [][]interface{}
+	Preload []string
 	Select  []string
 	Join    []*Join
 }
