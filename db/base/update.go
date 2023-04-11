@@ -2,11 +2,11 @@ package base
 
 import (
 	"context"
-	"errors"
 
+	myErrors "github.com/dokidokikoi/go-common/errors"
 	meta "github.com/dokidokikoi/go-common/meta/option"
 
-	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 func (p *PgModel[T]) Update(ctx context.Context, t *T, option *meta.UpdateOption) error {
@@ -28,12 +28,11 @@ func (p *PgModel[T]) Update(ctx context.Context, t *T, option *meta.UpdateOption
 	err := result.Error
 	pgErr, ok := err.(*pgconn.PgError)
 	if ok && pgErr.Code == "23505" {
-		err = errors.New("名称重复")
-		return err
+		err = myErrors.ErrNameDuplicate
 	}
 	row := result.RowsAffected
 	if row == 0 {
-		err = errors.New("无更新记录")
+		err = myErrors.ErrNoUpdateRows
 	}
 	return err
 }
@@ -43,11 +42,11 @@ func (p *PgModel[T]) UpdateByWhere(ctx context.Context, node *meta.WhereNode, ex
 	err := result.Error
 	pgErr, ok := err.(*pgconn.PgError)
 	if ok && pgErr.Code == "23505" {
-		err = errors.New("名称重复")
+		err = myErrors.ErrNameDuplicate
 	}
 	row := result.RowsAffected
 	if row == 0 {
-		err = errors.New("无更新记录")
+		err = myErrors.ErrNoUpdateRows
 	}
 	return err
 }
