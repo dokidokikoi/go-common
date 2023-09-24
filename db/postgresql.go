@@ -120,7 +120,7 @@ func NewPostgresql(username string, database string, options ...OptionFunc) (*go
 		configs.password,
 	)
 	db, err := gorm.Open(postgres.Open(dns), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger: logger.Default.LogMode(logger.Error),
 	})
 	if err != nil {
 		return nil, err
