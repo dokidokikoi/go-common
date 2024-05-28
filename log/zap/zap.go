@@ -1,6 +1,7 @@
-package zap
+package zaplog
 
 import (
+	"github.com/dokidokikoi/go-common/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -15,10 +16,20 @@ func init() {
 // 提供两种输出文件以及标准输出
 func NewDefaultLogger() *zap.Logger {
 	core := zapcore.NewTee(
-		NewFileCore("./logs"),
-		NewStdCore(),
+		append(NewFileCore(config.LogConfig{}), NewStdCore())...,
 	)
 	return zap.New(core)
+}
+
+func NewLogger(conf config.LogConfig) *zap.Logger {
+	core := zapcore.NewTee(
+		append(NewFileCore(conf), NewStdCore())...,
+	)
+	return zap.New(core)
+}
+
+func SetLogger(conf config.LogConfig) {
+	z = NewLogger(conf)
 }
 
 func Suger() *zap.SugaredLogger {

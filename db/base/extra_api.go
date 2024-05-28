@@ -51,8 +51,8 @@ func getWhereSql(node *meta.WhereNode) (string, []any) {
 
 }
 
-func CommonDealList(db *gorm.DB, example interface{}, option *meta.ListOption) (tx *gorm.DB) {
-	if option != nil && option.Validate() != nil {
+func CommonDeal(db *gorm.DB, example interface{}, option *meta.GetOption) (tx *gorm.DB) {
+	if option != nil {
 		if option.Preload != nil {
 			for _, s := range option.Preload {
 				db = db.Preload(s)
@@ -60,9 +60,19 @@ func CommonDealList(db *gorm.DB, example interface{}, option *meta.ListOption) (
 		}
 		for _, join := range option.Join {
 			joinSQL := fmt.Sprintf("%s %s ON %s.%s = %s.%s", join.Method, join.JoinTable, join.Table, join.TableField, join.JoinTable, join.JoinTableField)
-			var joinConditions []string
 			var values []any
-			joinConditions = append(joinConditions, joinSQL)
+			if join.InnerQueryAlias != "" {
+				joinSQL = fmt.Sprintf("%s (?) %s ON %s.%s = %s.%s",
+					join.Method,
+					join.InnerQueryAlias,
+					join.Table,
+					join.TableField,
+					join.InnerQueryAlias,
+					join.JoinTableField,
+				)
+				values = append(values, join.InnerQuery)
+			}
+			joinConditions := []string{joinSQL}
 			for _, condition := range join.JoinTableCondition {
 				joinConditions = append(joinConditions, fmt.Sprintf("%s.%s %s ?", join.JoinTable, condition.Field, condition.Operator))
 				values = append(values, condition.Value)
@@ -81,7 +91,7 @@ func CommonDealList(db *gorm.DB, example interface{}, option *meta.ListOption) (
 		if option.Group != "" {
 			db.Group(option.Group)
 		}
-		tx = db.Limit(option.PageSize).Offset((option.Page - 1) * option.PageSize).Order(option.Order)
+		tx = db
 		return
 	}
 	tx = db.Where(example)

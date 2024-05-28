@@ -3,7 +3,7 @@ package middleware
 import (
 	"time"
 
-	"github.com/dokidokikoi/go-common/log/zap"
+	zaplog "github.com/dokidokikoi/go-common/log/zap"
 	"github.com/gin-gonic/gin"
 )
 
@@ -37,6 +37,6 @@ func Logger() gin.HandlerFunc {
 			path = path + "?" + raw
 		}
 		param.Path = path
-		zap.L().Sugar().Infof("接口调用		%+v", param)
+		zaplog.L().Sugar().Infof("接口调用		%+v", param)
 	}
 }

@@ -1,9 +1,13 @@
 package code
 
-// 校验错误
+// 客户端错误
 const (
 	ErrValidation int = iota + 10000
 	ErrTokenValidation
+	ErrPassword
+	ErrTokenExpired
+	ErrAccessDenied
+	ErrPlzLogin
 )
 
 // 数据库错误
@@ -13,13 +17,9 @@ const (
 	ErrDatabaseOp
 	ErrRecordNotEnough
 	ErrNoUpdateRows
-	ErrSystemErr
 )
 
-// 业务错误
+// 系统错误
 const (
-	ErrPassword int = iota + 10200
-	ErrTokenExpired
-	ErrAccessDenied
-	ErrPlzLogin
+	ErrSystemErr int = iota + 10200
 )

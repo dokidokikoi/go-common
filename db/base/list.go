@@ -9,21 +9,9 @@ import (
 	"gorm.io/gorm"
 )
 
-func (p *PgModel[T]) CountDB(ctx context.Context, t *T, option *meta.GetOption) *gorm.DB {
-	if option != nil && len(option.Include) > 0 {
-		var fields []any
-		for _, i := range option.Include {
-			fields = append(fields, i)
-		}
-		return p.DB.Model(t).Where(t, fields...)
-	}
-	return p.DB.Model(t).Where(t)
-}
-
 func (p *PgModel[T]) Count(ctx context.Context, t *T, option *meta.GetOption) (int64, error) {
 	var result int64
-	db := p.CountDB(ctx, t, option)
-	err := db.Count(&result).Error
+	err := CommonDeal(p.DB.Model(t), t, option).Count(&result).Error
 	return result, err
 }
 
@@ -58,13 +46,16 @@ func (p *PgModel[T]) CountComplexDB(ctx context.Context, example *T, condition *
 
 func (p *PgModel[T]) CountComplex(ctx context.Context, example *T, condition *meta.WhereNode, option *meta.GetOption) (int64, error) {
 	var result int64
-	db := p.CountComplexDB(ctx, example, condition, option)
-	err := db.Count(&result).Error
+	err := CompositeQuery(CommonDeal(p.DB.Model(example), example, option), condition).Count(&result).Error
 	return result, err
 }
 
 func (p *PgModel[T]) ListDB(ctx context.Context, t *T, option *meta.ListOption) *gorm.DB {
-	return CommonDealList(p.DB, t, option)
+	db := CommonDeal(p.DB, t, &option.GetOption)
+	if len(option.Validate()) < 1 {
+		return db.Limit(option.PageSize).Offset((option.Page - 1) * option.PageSize).Order(option.Order)
+	}
+	return db
 }
 
 func (p *PgModel[T]) List(ctx context.Context, t *T, option *meta.ListOption) ([]*T, error) {
@@ -74,7 +65,11 @@ func (p *PgModel[T]) List(ctx context.Context, t *T, option *meta.ListOption) ([
 }
 
 func (p *PgModel[T]) ListComplexDB(ctx context.Context, example *T, condition *meta.WhereNode, option *meta.ListOption) *gorm.DB {
-	return CompositeQuery(CommonDealList(p.DB, example, option), condition)
+	db := CommonDeal(p.DB, example, &option.GetOption)
+	if len(option.Validate()) < 1 {
+		db = db.Limit(option.PageSize).Offset((option.Page - 1) * option.PageSize).Order(option.Order)
+	}
+	return CompositeQuery(db, condition)
 }
 
 func (p *PgModel[T]) ListComplex(ctx context.Context, example *T, condition *meta.WhereNode, option *meta.ListOption) ([]*T, error) {

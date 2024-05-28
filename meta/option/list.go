@@ -7,7 +7,6 @@ type ListOption struct {
 	PageSize int `validate:"gte=1|eq=-1"`
 	Page     int `validate:"gte=1|eq=-1"`
 	Order    string
-	Group    string
 }
 
 func (l *ListOption) Validate() []error {

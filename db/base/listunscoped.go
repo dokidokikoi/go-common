@@ -55,12 +55,20 @@ func (p *PgModel[T]) CountComplexUnscoped(ctx context.Context, example *T, condi
 
 func (p *PgModel[T]) ListUnscoped(ctx context.Context, t *T, option *meta.ListOption) ([]*T, error) {
 	var tList []*T
-	err := CommonDealList(p.DB, t, option).Unscoped().Find(&tList).Error
+	db := CommonDeal(p.DB, t, &option.GetOption)
+	if len(option.Validate()) < 1 {
+		db = db.Limit(option.PageSize).Offset((option.Page - 1) * option.PageSize).Order(option.Order)
+	}
+	err := db.Unscoped().Find(&tList).Error
 	return tList, err
 }
 
 func (p *PgModel[T]) ListComplexUnscoped(ctx context.Context, example *T, condition *meta.WhereNode, option *meta.ListOption) ([]*T, error) {
 	var tList []*T
-	err := CompositeQuery(CommonDealList(p.DB, example, option), condition).Unscoped().Find(&tList).Error
+	db := CommonDeal(p.DB, example, &option.GetOption)
+	if len(option.Validate()) < 1 {
+		db = db.Limit(option.PageSize).Offset((option.Page - 1) * option.PageSize).Order(option.Order)
+	}
+	err := CompositeQuery(db, condition).Unscoped().Find(&tList).Error
 	return tList, err
 }

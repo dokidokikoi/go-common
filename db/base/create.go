@@ -40,12 +40,15 @@ func (p *PgModel[T]) CreateMany2Many(ctx context.Context, t *T, ids interface{},
 	return errors.New("未指定关联字段名")
 }
 
-func (p *PgModel[T]) CreateCollection(ctx context.Context, t []*T, option *meta.CreateCollectionOption) []error {
-	var errors []error
-	for _, up := range t {
-		if e := p.Create(ctx, up, nil); e != nil {
-			errors = append(errors, e)
-		}
+func (p *PgModel[T]) Creates(ctx context.Context, t []*T, option *meta.CreateCollectionOption) error {
+	db := p.DB
+	if option != nil && option.Omit != "" {
+		db = db.Omit(option.Omit)
 	}
-	return errors
+	err := db.Create(t).Error
+	pgErr, ok := err.(*pgconn.PgError)
+	if ok && pgErr.Code == "23505" {
+		err = myErrors.ErrNameDuplicate
+	}
+	return err
 }

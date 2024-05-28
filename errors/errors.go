@@ -3,7 +3,7 @@ package errors
 import (
 	"errors"
 
-	"github.com/dokidokikoi/go-common/code"
+	"github.com/dokidokikoi/go-common/errors/code"
 )
 
 var (

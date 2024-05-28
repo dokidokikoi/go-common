@@ -1,5 +1,7 @@
 package meta
 
+import "gorm.io/gorm"
+
 const (
 	INNER_JOIN  = "INNER JOIN"
 	LEFT_JOIN   = "LEFT JOIN"
@@ -11,12 +13,15 @@ type GetOption struct {
 	Preload []string
 	Select  []string
 	Join    []*Join
+	Group   string
 }
 
 type Join struct {
 	Method             string
 	Table              string
 	JoinTable          string
+	InnerQueryAlias    string
+	InnerQuery         *gorm.DB
 	TableField         string
 	JoinTableField     string
 	JoinTableCondition []Condition
