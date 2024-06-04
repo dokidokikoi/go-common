@@ -51,10 +51,16 @@ func (p *PgModel[T]) CountComplex(ctx context.Context, example *T, condition *me
 }
 
 func (p *PgModel[T]) ListDB(ctx context.Context, t *T, option *meta.ListOption) *gorm.DB {
-	db := CommonDeal(p.DB, t, &option.GetOption)
-	if len(option.Validate()) < 1 {
-		return db.Limit(option.PageSize).Offset((option.Page - 1) * option.PageSize).Order(option.Order)
+	var db *gorm.DB
+	if option == nil {
+		db = CommonDeal(p.DB, t, nil)
+	} else {
+		db = CommonDeal(p.DB, t, &option.GetOption)
+		if len(option.Validate()) < 1 {
+			return db.Limit(option.PageSize).Offset((option.Page - 1) * option.PageSize).Order(option.Order)
+		}
 	}
+
 	return db
 }
 
@@ -65,9 +71,14 @@ func (p *PgModel[T]) List(ctx context.Context, t *T, option *meta.ListOption) ([
 }
 
 func (p *PgModel[T]) ListComplexDB(ctx context.Context, example *T, condition *meta.WhereNode, option *meta.ListOption) *gorm.DB {
-	db := CommonDeal(p.DB, example, &option.GetOption)
-	if len(option.Validate()) < 1 {
-		db = db.Limit(option.PageSize).Offset((option.Page - 1) * option.PageSize).Order(option.Order)
+	var db *gorm.DB
+	if option == nil {
+		db = CommonDeal(p.DB, example, nil)
+	} else {
+		db = CommonDeal(p.DB, example, &option.GetOption)
+		if len(option.Validate()) < 1 {
+			db = db.Limit(option.PageSize).Offset((option.Page - 1) * option.PageSize).Order(option.Order)
+		}
 	}
 	return CompositeQuery(db, condition)
 }

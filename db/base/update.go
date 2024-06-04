@@ -23,6 +23,9 @@ func (p *PgModel[T]) Update(ctx context.Context, t *T, option *meta.UpdateOption
 				db = p.DB.Select(first, params...)
 			}
 		}
+		if len(option.Omit) > 0 {
+			db = db.Omit(option.Omit...)
+		}
 	}
 	result := db.Updates(t)
 	err := result.Error
@@ -38,7 +41,24 @@ func (p *PgModel[T]) Update(ctx context.Context, t *T, option *meta.UpdateOption
 }
 
 func (p *PgModel[T]) UpdateByWhere(ctx context.Context, node *meta.WhereNode, example *T, option *meta.UpdateOption) error {
-	result := CompositeQuery(p.DB, node).Updates(*example)
+	db := p.DB
+	if option != nil {
+		if len(option.Select) > 0 {
+			var params []any
+			for _, s := range option.Select {
+				params = append(params, s)
+			}
+			if len(params) > 0 {
+				first := params[0]
+				params = params[1:]
+				db = p.DB.Select(first, params...)
+			}
+		}
+		if len(option.Omit) > 0 {
+			db = db.Omit(option.Omit...)
+		}
+	}
+	result := CompositeQuery(db, node).Updates(*example)
 	err := result.Error
 	pgErr, ok := err.(*pgconn.PgError)
 	if ok && pgErr.Code == "23505" {
@@ -52,9 +72,26 @@ func (p *PgModel[T]) UpdateByWhere(ctx context.Context, node *meta.WhereNode, ex
 }
 
 func (p *PgModel[T]) UpdateCollection(ctx context.Context, t []*T, option *meta.UpdateCollectionOption) []error {
+	db := p.DB
+	if option != nil {
+		if len(option.Select) > 0 {
+			var params []any
+			for _, s := range option.Select {
+				params = append(params, s)
+			}
+			if len(params) > 0 {
+				first := params[0]
+				params = params[1:]
+				db = p.DB.Select(first, params...)
+			}
+		}
+		if len(option.Omit) > 0 {
+			db = db.Omit(option.Omit...)
+		}
+	}
 	var errors []error
 	for _, up := range t {
-		if e := p.DB.Updates(up).Error; e != nil {
+		if e := db.Updates(up).Error; e != nil {
 			errors = append(errors, e)
 		}
 	}
@@ -62,5 +99,22 @@ func (p *PgModel[T]) UpdateCollection(ctx context.Context, t []*T, option *meta.
 }
 
 func (p *PgModel[T]) Save(ctx context.Context, t *T, option *meta.UpdateOption) error {
-	return p.DB.Save(t).Error
+	db := p.DB
+	if option != nil {
+		if len(option.Select) > 0 {
+			var params []any
+			for _, s := range option.Select {
+				params = append(params, s)
+			}
+			if len(params) > 0 {
+				first := params[0]
+				params = params[1:]
+				db = p.DB.Select(first, params...)
+			}
+		}
+		if len(option.Omit) > 0 {
+			db = db.Omit(option.Omit...)
+		}
+	}
+	return db.Save(t).Error
 }
