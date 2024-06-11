@@ -31,6 +31,14 @@ func ClientFailed(message string, code int) *APIError {
 	}
 }
 
+func NotifyFailed(message string, code int) *APIError {
+	return &APIError{
+		StatusCode: http.StatusOK,
+		Message:    message,
+		Code:       code,
+	}
+}
+
 func ClientAuthnFailed(message string) *APIError {
 	return &APIError{
 		StatusCode: http.StatusUnauthorized,

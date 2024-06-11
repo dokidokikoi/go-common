@@ -22,7 +22,7 @@ var (
 )
 
 var (
-	ApiErrRecordNotFound  = ClientFailed(ErrRecordNotFound.Error(), code.ErrRecordNotFound)
+	ApiErrRecordNotFound  = NotifyFailed(ErrRecordNotFound.Error(), code.ErrRecordNotFound)
 	ApiErrValidation      = ClientFailed(ErrValidation.Error(), code.ErrValidation)
 	ApiErrDatabaseOp      = ClientFailed(ErrDatabaseOp.Error(), code.ErrDatabaseOp)
 	ApiErrRecordNotEnough = ClientFailed(ErrRecordNotEnough.Error(), code.ErrRecordNotEnough)

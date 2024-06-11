@@ -40,6 +40,9 @@ func (p *PgModel[T]) Create(ctx context.Context, t *T, option *meta.CreateOption
 // }
 
 func (p *PgModel[T]) Creates(ctx context.Context, t []*T, option *meta.CreateCollectionOption) error {
+	if len(t) < 1 {
+		return nil
+	}
 	db := p.DB
 	if option != nil && len(option.Omit) > 0 {
 		db = db.Omit(option.Omit...)
