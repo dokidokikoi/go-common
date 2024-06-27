@@ -60,6 +60,7 @@ func (p *PgModel[T]) ListDB(ctx context.Context, t *T, option *meta.ListOption) 
 			return db.Limit(option.PageSize).Offset((option.Page - 1) * option.PageSize).Order(option.Order)
 		}
 	}
+	db = db.Model(t)
 
 	return db
 }
@@ -80,6 +81,7 @@ func (p *PgModel[T]) ListComplexDB(ctx context.Context, example *T, condition *m
 			db = db.Limit(option.PageSize).Offset((option.Page - 1) * option.PageSize).Order(option.Order)
 		}
 	}
+	db = db.Model(example)
 	return CompositeQuery(db, condition)
 }
 

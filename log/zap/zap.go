@@ -25,14 +25,14 @@ func NewLogger(conf config.LogConfig) *zap.Logger {
 	core := zapcore.NewTee(
 		append(NewFileCore(conf), NewStdCore())...,
 	)
-	return zap.New(core)
+	return zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.WarnLevel))
 }
 
 func SetLogger(conf config.LogConfig) {
 	z = NewLogger(conf)
 }
 
-func Suger() *zap.SugaredLogger {
+func Sugar() *zap.SugaredLogger {
 	return z.Sugar()
 }
 

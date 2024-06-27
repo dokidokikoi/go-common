@@ -77,7 +77,7 @@ func CommonDeal(db *gorm.DB, example interface{}, option *meta.GetOption) (tx *g
 				joinConditions = append(joinConditions, fmt.Sprintf("%s.%s %s ?", join.JoinTable, condition.Field, condition.Operator))
 				values = append(values, condition.Value)
 			}
-			db.Joins(strings.Join(joinConditions, " AND "), values...)
+			db = db.Joins(strings.Join(joinConditions, " AND "), values...)
 		}
 		if option.Include == nil {
 			db = db.Where(example)

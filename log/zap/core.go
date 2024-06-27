@@ -10,7 +10,7 @@ import (
 
 var (
 	defaultFilename   = "./log/log.log"
-	defaultMaxSize    = 500
+	defaultMaxSize    = 50
 	defaultMaxBackups = 3
 	defaultMaxAge     = 90
 )
@@ -18,7 +18,7 @@ var (
 func NewStdCore() zapcore.Core {
 	consoleWriter := zapcore.Lock(os.Stdout)
 	consoleEncoder := zapcore.NewConsoleEncoder(NewConsoleEncoderConfig())
-	return zapcore.NewCore(consoleEncoder, consoleWriter, infoPriority)
+	return zapcore.NewCore(consoleEncoder, consoleWriter, debugPriority)
 }
 
 func NewFileCore(conf config.LogConfig) []zapcore.Core {

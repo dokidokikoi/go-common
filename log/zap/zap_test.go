@@ -20,7 +20,10 @@ func TestMulti(t *testing.T) {
 			Filename: "./log/all.log",
 		},
 	}
-	l := NewLogger(conf)
+	SetLogger(conf)
+	l := L()
+
+	l.Sugar().Debugf("debug %s", "sugar")
 	l.Debug("debug")
 	l.Info("hello")
 	l.Error("error")
