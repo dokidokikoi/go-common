@@ -55,9 +55,9 @@ func (p *PgModel[T]) ListDB(ctx context.Context, t *T, option *meta.ListOption) 
 	if option == nil {
 		db = CommonDeal(p.DB, t, nil)
 	} else {
-		db = CommonDeal(p.DB, t, &option.GetOption)
+		db = CommonDeal(p.DB, t, &option.GetOption).Order(option.Order)
 		if len(option.Validate()) < 1 {
-			return db.Limit(option.PageSize).Offset((option.Page - 1) * option.PageSize).Order(option.Order)
+			db = db.Limit(option.PageSize).Offset((option.Page - 1) * option.PageSize)
 		}
 	}
 	db = db.Model(t)
@@ -76,9 +76,9 @@ func (p *PgModel[T]) ListComplexDB(ctx context.Context, example *T, condition *m
 	if option == nil {
 		db = CommonDeal(p.DB, example, nil)
 	} else {
-		db = CommonDeal(p.DB, example, &option.GetOption)
+		db = CommonDeal(p.DB, example, &option.GetOption).Order(option.Order)
 		if len(option.Validate()) < 1 {
-			db = db.Limit(option.PageSize).Offset((option.Page - 1) * option.PageSize).Order(option.Order)
+			db = db.Limit(option.PageSize).Offset((option.Page - 1) * option.PageSize)
 		}
 	}
 	db = db.Model(example)
