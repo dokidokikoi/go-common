@@ -6,6 +6,7 @@ import (
 
 	"go.etcd.io/etcd/api/v3/mvccpb"
 	clientv3 "go.etcd.io/etcd/client/v3"
+	"go.uber.org/zap"
 	"google.golang.org/grpc/resolver"
 )
 
@@ -27,14 +28,16 @@ type Resolver struct {
 	keyPrefix string
 	srvAddrs  []resolver.Address
 
-	cc resolver.ClientConn
+	cc     resolver.ClientConn
+	logger *zap.Logger
 }
 
-func NewResolver(addrs []string) *Resolver {
+func NewResolver(addrs []string, logger *zap.Logger) *Resolver {
 	return &Resolver{
 		scheme:      scheme,
 		Addrs:       addrs,
 		DialTimeout: 3,
+		logger:      logger,
 	}
 }
 

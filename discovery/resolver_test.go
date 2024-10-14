@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/dokidokikoi/go-common/discovery/testdata"
+	zaplog "github.com/dokidokikoi/go-common/log/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/resolver"
@@ -22,7 +23,7 @@ var etcdAddrs = []string{
 }
 
 func TestResolver(t *testing.T) {
-	r := NewResolver(etcdAddrs)
+	r := NewResolver(etcdAddrs, zaplog.L())
 	resolver.Register(r)
 
 	// etcd中注册5个服务
@@ -65,7 +66,7 @@ func (s *server) SayHello(c context.Context, req *testdata.HelloRequest) (*testd
 }
 
 func newServer(t *testing.T, port int, version string, weight int64) {
-	register := NewRegister(etcdAddrs)
+	register := NewRegister(etcdAddrs, zaplog.L())
 	defer register.Stop()
 
 	listen, err := net.Listen("tcp", ":"+strconv.Itoa(port))

@@ -3,6 +3,8 @@ package discovery
 import (
 	"fmt"
 	"testing"
+
+	zaplog "github.com/dokidokikoi/go-common/log/zap"
 )
 
 func TestRegister(t *testing.T) {
@@ -17,7 +19,7 @@ func TestRegister(t *testing.T) {
 		"127.0.0.1:23792",
 		"127.0.0.1:23793",
 	}
-	r := NewRegister(addrs)
+	r := NewRegister(addrs, zaplog.L())
 
 	_, err := r.Register(info, 120)
 	if err != nil {

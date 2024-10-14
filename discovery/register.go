@@ -8,6 +8,7 @@ import (
 	"time"
 
 	clientv3 "go.etcd.io/etcd/client/v3"
+	"go.uber.org/zap"
 )
 
 type ServiceInfo struct {
@@ -28,12 +29,14 @@ type Register struct {
 	srvInfo ServiceInfo
 	srvTTL  int64
 	cli     *clientv3.Client
+	logger  *zap.Logger
 }
 
-func NewRegister(addrs []string) *Register {
+func NewRegister(addrs []string, logger *zap.Logger) *Register {
 	return &Register{
 		Addrs:       addrs,
 		DialTimeout: 3,
+		logger:      logger,
 	}
 }
 
@@ -100,18 +103,18 @@ func (r *Register) keepAlive() {
 		select {
 		case <-r.closeCh:
 			if err := r.unregister(); err != nil {
-
+				r.logger.Error("unregister failed", zap.Error(err))
 			}
 		case resp := <-r.keepAliveCh:
 			if resp == nil {
 				if err := r.register(); err != nil {
-
+					r.logger.Error("register failed", zap.Error(err))
 				}
 			}
 		case <-ticker.C:
 			if r.keepAliveCh == nil {
 				if err := r.register(); err != nil {
-
+					r.logger.Error("register failed", zap.Error(err))
 				}
 			}
 		}
