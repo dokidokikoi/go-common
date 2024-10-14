@@ -11,6 +11,7 @@ import (
 
 	"github.com/dokidokikoi/go-common/discovery/testdata"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/resolver"
 )
 
@@ -20,18 +21,20 @@ var etcdAddrs = []string{
 	"127.0.0.1:23793",
 }
 
-func Testesolver(t *testing.T) {
+func TestResolver(t *testing.T) {
 	r := NewResolver(etcdAddrs)
 	resolver.Register(r)
 
 	// etcd中注册5个服务
-	go newServer(t, 1001, "1.0.0", 1)
-	go newServer(t, 1002, "1.0.0", 1)
-	go newServer(t, 1003, "1.0.0", 1)
-	go newServer(t, 1004, "1.0.0", 1)
-	go newServer(t, 1006, "1.0.0", 10)
+	go newServer(t, 10001, "1.0.0", 1)
+	go newServer(t, 10002, "1.0.0", 1)
+	go newServer(t, 10003, "1.0.0", 1)
+	go newServer(t, 10004, "1.0.0", 1)
+	go newServer(t, 10006, "1.0.0", 10)
 
-	conn, err := grpc.Dial("etcd:///hello", grpc.WithInsecure(), grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy":"round_robin"}`))
+	conn, err := grpc.NewClient("etcd:///test", grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithDefaultServiceConfig(
+		`{"loadBalancingPolicy":"round_robin"}`,
+	))
 	if err != nil {
 		t.Fatalf("failed to dial %v", err)
 	}
@@ -65,7 +68,7 @@ func newServer(t *testing.T, port int, version string, weight int64) {
 	register := NewRegister(etcdAddrs)
 	defer register.Stop()
 
-	listen, err := net.Listen("tcp", strconv.Itoa(port))
+	listen, err := net.Listen("tcp", ":"+strconv.Itoa(port))
 	if err != nil {
 		log.Fatalf("failed to listen %v", err)
 	}

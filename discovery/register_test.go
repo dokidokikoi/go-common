@@ -19,7 +19,7 @@ func TestRegister(t *testing.T) {
 	}
 	r := NewRegister(addrs)
 
-	_, err := r.Register(info, 2)
+	_, err := r.Register(info, 120)
 	if err != nil {
 		t.Fatalf("register to etcd failed %v", err)
 	}
@@ -28,5 +28,5 @@ func TestRegister(t *testing.T) {
 	if err != nil {
 		t.Fatalf("get info failed %v", err)
 	}
-	fmt.Printf("%v\n", infoRes)
+	fmt.Printf("%v\n12", infoRes)
 }
