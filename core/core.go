@@ -14,6 +14,11 @@ type Response struct {
 	Data    interface{} `json:"data"`
 }
 
+type ListResponseData[T any] struct {
+	List  []T   `json:"list"`
+	Total int64 `json:"total"`
+}
+
 type ApiResponse struct {
 	ApiError *myErrors.APIError
 	Data     interface{}

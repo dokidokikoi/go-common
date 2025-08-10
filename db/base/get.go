@@ -17,6 +17,9 @@ func (p *PgModel[T]) Get(ctx context.Context, t *T, option *meta.GetOption) (*T,
 		if option.Include != nil {
 			db = db.Where(t, option.Include)
 		}
+		if len(option.Select) > 0 {
+			db = db.Select(option.Select)
+		}
 	}
 	err = db.Where(t).First(&result).Error
 

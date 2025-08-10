@@ -6,6 +6,7 @@ type APIError struct {
 	Code       int    `json:"code"`
 	StatusCode int    `json:"status_code"`
 	Message    string `json:"message"`
+	Err        error
 }
 
 func Success(message string) *APIError {
@@ -45,4 +46,14 @@ func ClientAuthnFailed(message string) *APIError {
 		Message:    message,
 	}
 
+}
+
+func Wrap(apiErr *APIError, err error) *APIError {
+	apiErr.Err = err
+	return &APIError{
+		StatusCode: apiErr.StatusCode,
+		Message:    apiErr.Message,
+		Code:       apiErr.Code,
+		Err:        err,
+	}
 }

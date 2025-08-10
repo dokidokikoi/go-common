@@ -14,7 +14,7 @@ func Config() *viper.Viper {
 	return config
 }
 
-func Parse(configFile string, obj interface{}) {
+func Parse(configFile string, obj interface{}, envPrefix string) {
 	confFileAbs, err := filepath.Abs(configFile)
 	if err != nil {
 		panic(err)
@@ -28,6 +28,11 @@ func Parse(configFile string, obj interface{}) {
 	config.AddConfigPath(filePathStr)
 	config.SetConfigName(filename)
 	config.SetConfigType(ext)
+	// 环境变量
+	config.AutomaticEnv()
+	config.SetEnvPrefix(envPrefix)
+	replacer := strings.NewReplacer(".", "_")
+	config.SetEnvKeyReplacer(replacer)
 	err = config.ReadInConfig()
 	if err != nil {
 		panic(err)

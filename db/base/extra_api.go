@@ -79,9 +79,7 @@ func CommonDeal(db *gorm.DB, example interface{}, option *meta.GetOption) (tx *g
 			}
 			db = db.Joins(strings.Join(joinConditions, " AND "), values...)
 		}
-		if option.Include == nil {
-			db = db.Where(example)
-		} else {
+		if option.Include != nil {
 			var fields []any
 			for _, i := range option.Include {
 				fields = append(fields, i)
@@ -90,6 +88,9 @@ func CommonDeal(db *gorm.DB, example interface{}, option *meta.GetOption) (tx *g
 		}
 		if option.Group != "" {
 			db.Group(option.Group)
+		}
+		if len(option.Select) > 0 {
+			db.Select(option.Select)
 		}
 		tx = db
 		return
