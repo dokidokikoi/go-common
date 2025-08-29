@@ -48,13 +48,17 @@ func GenQueryParams(p any) string {
 			vf = vf.Elem()
 		}
 		f := t.Field(i)
+		name := f.Tag.Get("query")
+		if name == "" || name == "-" {
+			continue
+		}
 		if f.Type.Kind() == reflect.Slice {
 			for i := 0; i < vf.Len(); i++ {
-				builder.WriteString(fmt.Sprintf("%s=%v&", f.Tag.Get("query")+"[]", vf.Index(i).Interface()))
+				builder.WriteString(fmt.Sprintf("%s=%v&", name+"[]", vf.Index(i).Interface()))
 			}
 			continue
 		}
-		builder.WriteString(fmt.Sprintf("%s=%v&", f.Tag.Get("query"), vf.Interface()))
+		builder.WriteString(fmt.Sprintf("%s=%v&", name, vf.Interface()))
 	}
 	return builder.String()
 }

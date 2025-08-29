@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func PreHandle[Input any, Resp any](handler func(ctx context.Context, input Input) (Resp, *errors.APIError)) gin.HandlerFunc {
+func PreHandle[Input any, Resp any](handler func(ctx context.Context, input *Input) (Resp, *errors.APIError)) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var input Input
 		err := ctx.ShouldBind(&input)
@@ -20,7 +20,7 @@ func PreHandle[Input any, Resp any](handler func(ctx context.Context, input Inpu
 			return
 		}
 
-		resp, apiErr := handler(ctx, input)
+		resp, apiErr := handler(ctx, &input)
 		if apiErr != nil {
 			zaplog.L().Error("handler", zap.Error(err))
 			core.WriteResponse(ctx, apiErr, nil)
