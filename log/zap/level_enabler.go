@@ -16,12 +16,12 @@ var levelM = map[string]zapcore.Level{
 }
 
 var (
-	highPriority = zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl >= zapcore.ErrorLevel
-	})
-	infoPriority = zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl > zapcore.DebugLevel
-	})
+	// highPriority = zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+	// 	return lvl >= zapcore.ErrorLevel
+	// })
+	// infoPriority = zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+	// 	return lvl > zapcore.DebugLevel
+	// })
 	debugPriority = zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl >= zapcore.DebugLevel
 	})

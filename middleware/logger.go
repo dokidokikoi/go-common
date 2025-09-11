@@ -25,6 +25,7 @@ func Logger() gin.HandlerFunc {
 		path := ctx.Request.URL.Path
 		raw := ctx.Request.URL.RawQuery
 		start := time.Now()
+		zaplog.Named(ctx, path)
 
 		ctx.Next()
 

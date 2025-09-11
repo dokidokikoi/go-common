@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	myErrors "github.com/dokidokikoi/go-common/errors"
+	"github.com/dokidokikoi/go-common/errors/code"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,17 +28,31 @@ type ApiResponse struct {
 // WriteResponse write an error or the response data into http response body.
 // It use errors.ParseCoder to parse any error into errors.Coder
 // errors.Coder contains error code, user-safe error message and http status code.
-func WriteResponse(c *gin.Context, apiError *myErrors.APIError, data interface{}) {
-	if apiError == nil {
-		c.JSON(http.StatusOK, Response{Data: data})
+func WriteResponse(c *gin.Context, err error, data interface{}) {
+	apiErr := ErrFrom(c)
+	if apiErr != nil {
+		c.JSON(apiErr.StatusCode, Response{
+			Code:    apiErr.Code,
+			Message: apiErr.Message,
+			Data:    data,
+		})
 		return
+	} else if err != nil {
+		co := CodeFrom(c)
+		if co == 0 {
+			co = code.CodeSystemErr
+		}
+		msg := MsgFrom(c)
+		if msg == "" {
+			msg = co.Message()
+		}
+		c.JSON(http.StatusOK, Response{
+			Code:    int(co),
+			Message: msg,
+			Data:    data,
+		})
 	}
 
-	c.JSON(apiError.StatusCode, Response{
-		Code:    apiError.Code,
-		Message: apiError.Message,
-		Data:    data,
-	})
 }
 
 func WriteListResponse(c *gin.Context, apiError *myErrors.APIError, total int64, data interface{}) {

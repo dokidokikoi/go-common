@@ -1,8 +1,7 @@
 package config
 
 import (
-	"path"
-	"path/filepath"
+	"io"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -14,26 +13,15 @@ func Config() *viper.Viper {
 	return config
 }
 
-func Parse(configFile string, obj interface{}, envPrefix string) {
-	confFileAbs, err := filepath.Abs(configFile)
-	if err != nil {
-		panic(err)
-	}
-
-	filePathStr, filename := filepath.Split(confFileAbs)
-	ext := strings.TrimLeft(path.Ext(filename), ".")
-	filename = strings.ReplaceAll(filename, "."+ext, "")
-
+func Parse(defaultConfig io.Reader, obj interface{}, envPrefix string) {
 	config = viper.New()
-	config.AddConfigPath(filePathStr)
-	config.SetConfigName(filename)
-	config.SetConfigType(ext)
+	config.SetConfigType("yml")
 	// 环境变量
 	config.AutomaticEnv()
 	config.SetEnvPrefix(envPrefix)
 	replacer := strings.NewReplacer(".", "_")
 	config.SetEnvKeyReplacer(replacer)
-	err = config.ReadInConfig()
+	err := config.ReadConfig(defaultConfig)
 	if err != nil {
 		panic(err)
 	}
