@@ -25,7 +25,7 @@ func NewLogger(conf config.LogConfig) *zap.Logger {
 	core := zapcore.NewTee(
 		append(NewFileCore(conf), NewStdCore())...,
 	)
-	return zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.WarnLevel))
+	return zap.New(core, zap.AddCaller())
 }
 
 func SetLogger(conf config.LogConfig) {

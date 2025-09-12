@@ -4,6 +4,7 @@ import (
 	"context"
 
 	myErrors "github.com/dokidokikoi/go-common/errors"
+	"gorm.io/gorm/clause"
 
 	meta "github.com/dokidokikoi/go-common/meta/option"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -39,15 +40,21 @@ func (p *PgModel[T]) Create(ctx context.Context, t *T, option *meta.CreateOption
 // 	return errors.New("未指定关联字段名")
 // }
 
-func (p *PgModel[T]) Creates(ctx context.Context, t []*T, option *meta.CreateCollectionOption) error {
-	if len(t) < 1 {
+func (p *PgModel[T]) Creates(ctx context.Context, ts []*T, option *meta.CreateCollectionOption) error {
+	if len(ts) < 1 {
 		return nil
 	}
 	db := p.DB
 	if option != nil && len(option.Omit) > 0 {
 		db = db.Omit(option.Omit...)
 	}
-	err := db.Create(t).Error
+	if option.DoUpdates != nil {
+		db = db.Clauses(clause.OnConflict{
+			Columns:   option.DoUpdates.Columns,
+			DoUpdates: option.DoUpdates.Updates,
+		})
+	}
+	err := db.CreateInBatches(ts, 1000).Error
 	pgErr, ok := err.(*pgconn.PgError)
 	if ok && pgErr.Code == "23505" {
 		err = myErrors.ErrNameDuplicate

@@ -26,6 +26,7 @@ func TestMulti(t *testing.T) {
 	l.Sugar().Debugf("debug %s", "sugar")
 	l.Debug("debug")
 	l.Info("hello")
+	l.Warn("warn")
 	l.Error("error")
 	l.Panic("panic")
 }
