@@ -3,10 +3,7 @@ package base
 import (
 	"context"
 
-	myErrors "github.com/dokidokikoi/go-common/errors"
 	meta "github.com/dokidokikoi/go-common/meta/option"
-
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
 func (p *PgModel[T]) Update(ctx context.Context, t *T, option *meta.UpdateOption) error {
@@ -27,17 +24,8 @@ func (p *PgModel[T]) Update(ctx context.Context, t *T, option *meta.UpdateOption
 			db = db.Omit(option.Omit...)
 		}
 	}
-	result := db.Updates(t)
-	err := result.Error
-	pgErr, ok := err.(*pgconn.PgError)
-	if ok && pgErr.Code == "23505" {
-		err = myErrors.ErrNameDuplicate
-	}
-	row := result.RowsAffected
-	if row == 0 {
-		err = myErrors.ErrNoUpdateRows
-	}
-	return err
+
+	return errorHandle(db.Updates(t).Error)
 }
 
 func (p *PgModel[T]) UpdateByWhere(ctx context.Context, node *meta.WhereNode, example *T, option *meta.UpdateOption) error {
@@ -59,16 +47,8 @@ func (p *PgModel[T]) UpdateByWhere(ctx context.Context, node *meta.WhereNode, ex
 		}
 	}
 	result := CompositeQuery(db, node).Updates(*example)
-	err := result.Error
-	pgErr, ok := err.(*pgconn.PgError)
-	if ok && pgErr.Code == "23505" {
-		err = myErrors.ErrNameDuplicate
-	}
-	row := result.RowsAffected
-	if row == 0 {
-		err = myErrors.ErrNoUpdateRows
-	}
-	return err
+
+	return errorHandle(result.Error)
 }
 
 func (p *PgModel[T]) UpdateCollection(ctx context.Context, t []*T, option *meta.UpdateCollectionOption) []error {
@@ -116,5 +96,5 @@ func (p *PgModel[T]) Save(ctx context.Context, t *T, option *meta.UpdateOption) 
 			db = db.Omit(option.Omit...)
 		}
 	}
-	return db.Save(t).Error
+	return errorHandle(db.Save(t).Error)
 }

@@ -1,14 +1,17 @@
 package meta
 
-import "gorm.io/gorm/clause"
+type DoUpdates struct {
+	Columns []string
 
-type CreateOption struct {
-	Omit []string
+	Updates   []string
+	Values    []any
+	DoNothing bool
+	UpdateAll bool
 }
 
-type DoUpdates struct {
-	Columns []clause.Column
-	Updates clause.Set
+type CreateOption struct {
+	Omit      []string
+	DoUpdates *DoUpdates
 }
 
 type CreateCollectionOption struct {

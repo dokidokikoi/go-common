@@ -3,11 +3,9 @@ package base
 import (
 	"context"
 
-	myErrors "github.com/dokidokikoi/go-common/errors"
 	"gorm.io/gorm/clause"
 
 	meta "github.com/dokidokikoi/go-common/meta/option"
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
 func (p *PgModel[T]) Create(ctx context.Context, t *T, option *meta.CreateOption) error {
@@ -15,49 +13,48 @@ func (p *PgModel[T]) Create(ctx context.Context, t *T, option *meta.CreateOption
 	if option != nil && len(option.Omit) > 0 {
 		db = db.Omit(option.Omit...)
 	}
-	err := db.Create(t).Error
-	pgErr, ok := err.(*pgconn.PgError)
-	if ok && pgErr.Code == "23505" {
-		err = myErrors.ErrNameDuplicate
-	}
-	return err
+
+	return errorHandle(db.Create(t).Error)
 }
-
-// func (p *PgModel[T]) CreateMany2Many(ctx context.Context, t *T, ids interface{}, option *meta.CreateOption) error {
-// 	if len(option.Omit) > 0 {
-// 		err := p.DB.Omit(option.Omit...).Create(t).Error
-// 		if err != nil {
-// 			pgErr, ok := err.(*pgconn.PgError)
-// 			if ok && pgErr.Code == "23505" {
-// 				err = myErrors.ErrNameDuplicate
-// 			}
-// 			return err
-// 		}
-// 		association := p.DB.Model(t).Association(option.Omit...)
-// 		return association.Append(ids)
-// 	}
-
-// 	return errors.New("未指定关联字段名")
-// }
 
 func (p *PgModel[T]) Creates(ctx context.Context, ts []*T, option *meta.CreateCollectionOption) error {
 	if len(ts) < 1 {
 		return nil
 	}
 	db := p.DB
-	if option != nil && len(option.Omit) > 0 {
-		db = db.Omit(option.Omit...)
+	if option != nil {
+		if len(option.Omit) > 0 {
+			db = db.Omit(option.Omit...)
+		}
+		if option.DoUpdates != nil {
+			db = db.Clauses(handleOnUpdateOpeion(option.DoUpdates))
+		}
 	}
-	if option.DoUpdates != nil {
-		db = db.Clauses(clause.OnConflict{
-			Columns:   option.DoUpdates.Columns,
-			DoUpdates: option.DoUpdates.Updates,
-		})
+
+	return db.CreateInBatches(ts, 1000).Error
+}
+
+func handleOnUpdateOpeion(u *meta.DoUpdates) clause.OnConflict {
+	noConflict := clause.OnConflict{
+		DoNothing: u.DoNothing,
+		UpdateAll: u.UpdateAll,
 	}
-	err := db.CreateInBatches(ts, 1000).Error
-	pgErr, ok := err.(*pgconn.PgError)
-	if ok && pgErr.Code == "23505" {
-		err = myErrors.ErrNameDuplicate
+	if len(u.Columns) > 0 {
+		for _, column := range u.Columns {
+			noConflict.Columns = append(noConflict.Columns, clause.Column{Name: column})
+		}
 	}
-	return err
+	if len(u.Updates) > 0 {
+		if len(u.Values) == 0 {
+			noConflict.DoUpdates = clause.AssignmentColumns(u.Updates)
+		} else if len(u.Values) == len(u.Updates) {
+			m := make(map[string]any)
+			n := min(len(u.Updates), len(u.Values))
+			for i := range n {
+				m[u.Updates[i]] = u.Values[i]
+			}
+			noConflict.DoUpdates = clause.Assignments(m)
+		}
+	}
+	return noConflict
 }

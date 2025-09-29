@@ -18,7 +18,6 @@ var _ BasicCURD[struct{}] = (*PgModel[struct{}])(nil)
 
 type CreateMixin[T BaseModel] interface {
 	Create(ctx context.Context, t *T, option *meta.CreateOption) error
-	// CreateMany2Many(ctx context.Context, t *T, ids interface{}, option *meta.CreateOption) error
 	Creates(ctx context.Context, t []*T, option *meta.CreateCollectionOption) error
 }
 

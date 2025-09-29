@@ -29,30 +29,28 @@ type ApiResponse struct {
 // It use errors.ParseCoder to parse any error into errors.Coder
 // errors.Coder contains error code, user-safe error message and http status code.
 func WriteResponse(c *gin.Context, err error, data interface{}) {
+	var (
+		httpCode int = http.StatusOK
+		resp         = Response{Data: data}
+	)
 	apiErr := ErrFrom(c)
 	if apiErr != nil {
-		c.JSON(apiErr.StatusCode, Response{
-			Code:    apiErr.Code,
-			Message: apiErr.Message,
-			Data:    data,
-		})
-		return
+		httpCode = apiErr.StatusCode
+		resp.Code = apiErr.Code
+		resp.Message = apiErr.Message
 	} else if err != nil {
 		co := CodeFrom(c)
 		if co == 0 {
 			co = code.CodeSystemErr
 		}
+		resp.Code = int(co)
 		msg := MsgFrom(c)
 		if msg == "" {
 			msg = co.Message()
 		}
-		c.JSON(http.StatusOK, Response{
-			Code:    int(co),
-			Message: msg,
-			Data:    data,
-		})
+		resp.Message = msg
 	}
-
+	c.JSON(httpCode, resp)
 }
 
 func WriteListResponse(c *gin.Context, apiError *myErrors.APIError, total int64, data interface{}) {
