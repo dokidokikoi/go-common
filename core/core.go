@@ -3,6 +3,7 @@ package core
 import (
 	"net/http"
 
+	"github.com/dokidokikoi/go-common/errors"
 	myErrors "github.com/dokidokikoi/go-common/errors"
 	"github.com/dokidokikoi/go-common/errors/code"
 
@@ -25,26 +26,41 @@ type ApiResponse struct {
 	Data     interface{}
 }
 
+type ResponseOption struct {
+	Code code.Code
+	Msg  string
+	Err  *myErrors.APIError
+}
+
 // WriteResponse write an error or the response data into http response body.
 // It use errors.ParseCoder to parse any error into errors.Coder
 // errors.Coder contains error code, user-safe error message and http status code.
-func WriteResponse(c *gin.Context, err error, data interface{}) {
+func WriteResponse(c *gin.Context, err error, data interface{}, opt ...ResponseOption) {
 	var (
 		httpCode int = http.StatusOK
 		resp         = Response{Data: data}
 	)
-	apiErr := ErrFrom(c)
+	resp.Data = data
+
+	var (
+		apiErr *errors.APIError
+		co     code.Code
+		msg    string
+	)
+	if len(opt) > 0 {
+		apiErr = opt[0].Err
+		co = opt[0].Code
+		msg = opt[0].Msg
+	}
 	if apiErr != nil {
 		httpCode = apiErr.StatusCode
 		resp.Code = apiErr.Code
 		resp.Message = apiErr.Message
 	} else if err != nil {
-		co := CodeFrom(c)
 		if co == 0 {
 			co = code.CodeSystemErr
 		}
 		resp.Code = int(co)
-		msg := MsgFrom(c)
 		if msg == "" {
 			msg = co.Message()
 		}
