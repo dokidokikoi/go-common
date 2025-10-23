@@ -29,8 +29,12 @@ func (m *PreHandleOptions) SetErr(err *errors.APIError) {
 	m.err = err
 }
 
-func (m *PreHandleOptions) WithValue(ctx context.Context) context.Context {
-	return core.WithMsg(core.WithCode(core.WithErr(ctx, m.err), m.co), m.msg)
+func (m *PreHandleOptions) ToResponseOpt() core.ResponseOption {
+	return core.ResponseOption{
+		Code: m.co,
+		Err:  m.err,
+		Msg:  m.msg,
+	}
 }
 
 func PreHandle[Input any, Resp any](handler func(ctx context.Context, input *Input, op *PreHandleOptions) (Resp, error)) gin.HandlerFunc {
@@ -48,7 +52,7 @@ func PreHandle[Input any, Resp any](handler func(ctx context.Context, input *Inp
 		resp, err := handler(ctx, &input, op)
 		if err != nil {
 			logger.Error("handler", zap.Error(err))
-			core.WriteResponse(op.WithValue(ctx).(*gin.Context), err, nil)
+			core.WriteResponse(ctx, err, nil, op.ToResponseOpt())
 			return
 		}
 		core.WriteResponse(ctx, nil, resp)
