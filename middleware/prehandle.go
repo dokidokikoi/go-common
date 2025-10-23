@@ -44,7 +44,7 @@ func PreHandle[Input any, Resp any](handler func(ctx context.Context, input *Inp
 		err := ctx.ShouldBind(&input)
 		if err != nil {
 			logger.Error("ShouldBind", zap.Error(err))
-			core.WriteResponse(core.WithErr(ctx, errors.ApiErrValidation).(*gin.Context), err, nil)
+			core.WriteResponse(ctx, err, nil)
 			return
 		}
 
