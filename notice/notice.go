@@ -23,6 +23,7 @@ type NoticeResponse struct {
 	Rid     string `json:"rid"`
 	Event   string `json:"event"`
 	Message string `json:"message"`
+	Success bool   `json:"success"`
 	Data    any    `json:"data"`
 }
 
