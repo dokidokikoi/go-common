@@ -22,6 +22,9 @@ func (p *PgModel[T]) Get(ctx context.Context, t *T, option *meta.GetOption) (*T,
 		}
 	}
 	err = db.Where(t).First(&result).Error
+	if err != nil {
+		return nil, errorHandle(err)
+	}
 
-	return &result, errorHandle(err)
+	return &result, nil
 }

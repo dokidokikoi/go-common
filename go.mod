@@ -10,15 +10,18 @@ require (
 	github.com/gin-gonic/gin v1.8.2
 	github.com/go-playground/validator/v10 v10.11.1
 	github.com/gorilla/websocket v1.5.3
+	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/natefinch/lumberjack v2.0.0+incompatible
+	github.com/pkg/errors v0.9.1
 	github.com/robfig/cron/v3 v3.0.1
 	go.etcd.io/etcd/api/v3 v3.5.16
 	go.uber.org/zap v1.24.0
-	golang.org/x/crypto v0.28.0
+	golang.org/x/crypto v0.31.0
 	google.golang.org/grpc v1.67.1
 	gorm.io/driver/postgres v1.4.6
 	gorm.io/driver/sqlite v1.6.0
 	gorm.io/gorm v1.30.0
+	resty.dev/v3 v3.0.0-beta.3
 )
 
 require (
@@ -30,7 +33,6 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
-	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/spf13/afero v1.10.0 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
@@ -67,9 +69,9 @@ require (
 	go.etcd.io/etcd/client/v3 v3.5.16
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
-	golang.org/x/net v0.30.0
-	golang.org/x/sys v0.26.0 // indirect
-	golang.org/x/text v0.20.0 // indirect
+	golang.org/x/net v0.33.0
+	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/text v0.21.0
 	google.golang.org/protobuf v1.35.1
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
