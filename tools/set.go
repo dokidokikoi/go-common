@@ -5,7 +5,9 @@ type set[T comparable] struct {
 }
 
 func NewSet[T comparable](items ...T) *set[T] {
-	s := &set[T]{}
+	s := &set[T]{
+		m: make(map[T]struct{}),
+	}
 	for _, item := range items {
 		s.m[item] = struct{}{}
 	}
