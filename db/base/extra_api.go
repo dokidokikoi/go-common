@@ -85,6 +85,8 @@ func CommonDeal(db *gorm.DB, example interface{}, option *meta.GetOption) (tx *g
 				fields = append(fields, i)
 			}
 			db = db.Where(example, fields...)
+		} else {
+			db = db.Where(example)
 		}
 		if option.Group != "" {
 			db.Group(option.Group)
