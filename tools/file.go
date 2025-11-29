@@ -16,6 +16,7 @@ func SaveFileWithMd5Name(data io.Reader, dir string, ext string) (string, error)
 	if err != nil {
 		return "", err
 	}
+	defer os.Remove(tmpF.Name())
 	defer tmpF.Close()
 
 	r := io.TeeReader(data, tmpF)
