@@ -15,7 +15,7 @@ func init() {
 }
 
 type NoticeRequest struct {
-	Topic string `json:"topic" form:"topic" binding:"required"`
+	Topic string `json:"topic" form:"topic"`
 	Uid   string `json:"uid" form:"uid" binding:"required"`
 }
 

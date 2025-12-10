@@ -8,12 +8,17 @@ const (
 	RIGHRT_JOIN = "RIGHT JOIN"
 )
 
+type Group struct {
+	Fields []string
+	Having *WhereNode
+}
+
 type GetOption struct {
 	Include []string
 	Preload []string
 	Select  []string
 	Join    []*Join
-	Group   string
+	Group   Group
 }
 
 type Join struct {

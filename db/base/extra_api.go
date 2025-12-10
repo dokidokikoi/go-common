@@ -88,8 +88,12 @@ func CommonDeal(db *gorm.DB, example interface{}, option *meta.GetOption) (tx *g
 		} else {
 			db = db.Where(example)
 		}
-		if option.Group != "" {
-			db.Group(option.Group)
+		if len(option.Group.Fields) > 0 {
+			db.Group(strings.Join(option.Group.Fields, ","))
+			if option.Group.Having != nil {
+				havingSQL, values := getWhereSql(option.Group.Having)
+				db.Having(havingSQL, values...)
+			}
 		}
 		if len(option.Select) > 0 {
 			db.Select(option.Select)
