@@ -39,7 +39,9 @@ func Req(method, url string, body any, options ...Option) (*resty.Response, erro
 	clinet := GetHttpClient()
 	defer pool.Put(clinet)
 
-	req := clinet.R().SetBody(body)
+	req := clinet.R().AddRetryConditions(func(r *resty.Response, err error) bool {
+		return true
+	}).SetBody(body)
 	for _, o := range options {
 		o(req)
 	}
@@ -56,7 +58,9 @@ func ReqWithProxy(method, url string, body any, proxy string, options ...Option)
 		pool.Put(client.SetProxy(""))
 	}()
 	client.SetProxy(proxy)
-	req := client.R().SetBody(body)
+	req := client.R().AddRetryConditions(func(r *resty.Response, err error) bool {
+		return true
+	}).SetBody(body)
 	for _, o := range options {
 		o(req)
 	}
