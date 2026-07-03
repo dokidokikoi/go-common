@@ -1,5 +1,9 @@
 package tools
 
-func GetPtr[T any](t T) *T {
+func Ptr[T any](t T) *T {
 	return &t
+}
+
+func PeelPtr[T any](t *T) T {
+	return *t
 }

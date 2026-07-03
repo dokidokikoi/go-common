@@ -9,6 +9,9 @@ const (
 	LT       = "<"
 	IN       = "IN"
 	LIKE     = "LIKE"
+
+	PG_OVERLAP = "&&"
+	PG_CONTAIN = "@>"
 )
 
 type Condition struct {
