@@ -1,5 +1,10 @@
 package meta
 
+import (
+	"fmt"
+	"strings"
+)
+
 const (
 	EQUAL    = "="
 	NOTEQUAL = "<>"
@@ -32,4 +37,14 @@ type WhereNode struct {
 
 func (c *Condition) Validate() error {
 	return nil
+}
+
+func Array2String[T any](s []T) string {
+	strs := make([]string, len(s))
+
+	for i, v := range s {
+		strs[i] = fmt.Sprintf("%v", v)
+	}
+
+	return strings.Join(strs, ",")
 }
