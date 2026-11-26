@@ -83,25 +83,29 @@ func moveCrossDevice(source, destination string) error {
 }
 
 func Cp(src, dst string) error {
-	_, err := os.Stat(dst)
-	if err == nil {
-		return os.ErrExist
-	}
-	if os.IsExist(err) {
-		return err
-	}
-	dstF, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
-	defer dstF.Close()
-
 	srcF, err := os.Open(src)
 	if err != nil {
 		return err
 	}
 	defer srcF.Close()
 
-	_, err = io.Copy(dstF, srcF)
-	return err
+	dstF, err := os.OpenFile(dst, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o666)
+	if err != nil {
+		return err
+	}
+
+	_, copyErr := io.Copy(dstF, srcF)
+	closeErr := dstF.Close()
+
+	if copyErr != nil {
+		os.Remove(dst)
+		return copyErr
+	}
+
+	if closeErr != nil {
+		os.Remove(dst)
+		return closeErr
+	}
+
+	return nil
 }
