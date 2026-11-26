@@ -2,6 +2,7 @@ package config
 
 type LogConfig = []LogC
 
+// config
 type LogC struct {
 	Filename   string `mapstructure:"filename"`    // 日志文件名
 	MaxSize    int    `mapstructure:"max_size"`    // 日志文件最大大小，以 MB 为单位
